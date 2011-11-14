@@ -13,19 +13,13 @@
       <div id="header">
         <div class="content">
           <h1><a href="<?php echo url_for('/administrarEquipos') ?>">
-            <img src="/images/logo.jpg" alt="Jobeet Job Board" />
+            <img src="/images/logo.jpg" alt="Recytics" />
           </a></h1>
       </div>
- dasdasdasdas
-      /*<div id="content">
-        
-        <div class="content">
+ 
+    <div class="content">
           <?php echo $sf_content ?>
         </div>
-        <div class="content">
-          <?php echo $sf_admin_bar ?>
-        </div>       
-        
       </div>
  
       <div id="footer">
@@ -45,6 +39,5 @@
         </div>
       </div>
     </div>
-</div>
   </body>
 </html>
