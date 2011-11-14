@@ -14,7 +14,7 @@ Code licensed under the BSD License:
 http://developer.yahoo.net/yui/license.txt
 version: 2.6.0
 */
-body{font:12px/1.231 arial,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}select,input,button,textarea{font:99% arial,helvetica,clean,sans-serif;outline: none;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
+body{font:13px/1.231 arial,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}select,input,button,textarea{font:99% arial,helvetica,clean,sans-serif;outline: none;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
 
 a
 {
@@ -24,7 +24,7 @@ a
 
 body
 {
-  font: 13px "Lucida Grande", Lucida, Verdana, sans-serif;
+  font: 14px "Lucida Grande", Lucida, Verdana, sans-serif;
   background-color: #828f95;
 }
 
@@ -49,7 +49,7 @@ body
 
 #header h1 a {
   display: block;
-  width: 783px;
+  width: 150px;
   height: 110px;
   background: url(../images/logo.jpg) no-repeat;
 }
@@ -67,10 +67,96 @@ body
   margin-right: 40px;
 }
 
+#sub_header .search input
+{
+  background: url(../images/button-search.jpg) no-repeat;
+  text-indent: -9999px;
+  border: 0;
+  width: 95px;
+  height: 40px;
+  margin-left: 10px;
+}
+
+#sub_header .search input:hover
+{
+  background-position: left -40px;
+}
+
+#sub_header .search input:active
+{
+  background-position: left -80px;
+}
+
+#sub_header .search input#search_keywords
+{
+  font-size: 160%;
+  padding: 8px 10px;
+  line-height: 1.5em;
+  margin-bottom: 3px;
+  margin-left: 0px;
+  width: 579px;
+  height: 27px;
+  border: 0;
+  background: url(../images/search-box.jpg);
+  text-indent: 0;
+  color: #666;
+}
+
+#sub_header .post h2
+{
+  display: none;
+}
+
+#sub_header .post div a
+{
+  display: block;
+  background: url(../images/button-post.jpg);
+  text-indent: -9999px;
+  width: 150px;
+  height: 48px;
+}
+
+#sub_header .post div a:hover
+{
+  background-position: left -50px;
+}
+
+#sub_header .post div a:active
+{
+  background-position: left -100px;
+}
+
+
+#sub_header
+{
+  background: url(../images/bg-subheader.gif) bottom;
+  width: 783px;
+  height: 128px;
+  margin: 0 auto;
+}
+
+#sub_header .search
+{
+  padding: 15px 35px;
+}
+
+#sub_header h2
+{
+  text-indent: -9999px;
+}
+
+#sub_header .search h2
+{
+  background: url(../images/header-job.jpg) no-repeat;
+  height: 23px;
+  width: 250px;
+  margin-bottom: 7px;
+  margin-top: 5px;
+}
+
 #content .content {
   width: 600px;
   margin: 0 auto;
-  height: 0 auto;
 }
 
 #content h1
@@ -216,7 +302,7 @@ em
 {
   margin: 3px 0;
   padding: 7px;
-  background-color: #cfc;
+  background-color: #000;
 }
 
 .flash_error
@@ -228,57 +314,63 @@ em
 }
 
 
-#sf_admin_container{
-margin: 0 auto;
-font-family: arial;
-font-size: 12px;
-}
-#sf_admin_bar{
-    margin: 0 auto;
-   float:none;
-margin-bottom: 0;
-margin-left: 40%;
-}
-#sf_admin_content{
+#job_history
+{
+  width: 740px;
   margin: 0 auto;
-   width: 600px;
-  margin: 0 auto;
-  height: 0 auto;
+  padding: 7px;
+  font-size: 80%;
+  color: #5d6162;
 }
-h1{
-text-align: center;
-font-family: verdana;
-font-size: 20px;
 
-}
-h3{
-text-align: center;
-font-family: verdana;
-font-size: 20px;
-color: #fff;
-}
-.sf_admin_list table{
-width: 600%;
-font-family: arial;
-font-size: 12px;
-}
-#sf_admin_bar .sf_admin_filter table {
-width: 600px;
-margin-left: -150px;
-}
-.cont{
-margin-left: 20px;
-font-family: verdana;
-font-size: 12px;
-}
-.cont a:hover
+#job_history a
 {
-color: #0683ab;
-font-weight:bold;
-text-decoration: underline;
+  color: #5d6162;
 }
-.cont a:link
+
+#job_history ul
 {
-font-weight:bold;
-text-decoration:none;
+  display: inline;
+}
+
+#job_history li
+{
+  margin-right: 10px;
+  display: inline;
+}
+
+#job_form {
+  width: 760px;
+  margin: 0 auto;
+}
+
+#job_form .radio_list label {
+  margin-right: 15px;
+}
+
+
+#job_form th
+{
+  white-space: nowrap;
+  font-style: italic;
+}
+
+#job_form td, #job_form th
+{
+  border-bottom: 1px solid #eee;
+  border-top: 1px solid #eee;
+  text-align: left;
+  vertical-align: top;
+  padding: 7px;
+}
+
+#job_form tfoot td, #job_form tfoot th
+{
+  border: 0;
+  text-align: right;
+}
+
+#job_form .radio_list li
+{
+  display: inline;
 }
