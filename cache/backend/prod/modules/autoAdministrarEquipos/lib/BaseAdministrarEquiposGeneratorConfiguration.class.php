@@ -1,15 +1,25 @@
 <?php
 
 /**
- * administrarEquipos module configuration.
+ * AdministrarEquipos module configuration.
  *
  * @package    ##PROJECT_NAME##
- * @subpackage administrarEquipos
+ * @subpackage AdministrarEquipos
  * @author     ##AUTHOR_NAME##
- * @version    SVN: $Id: configuration.php 24171 2009-11-19 16:37:50Z Kris.Wallsmith $
+ * @version    SVN: $Id: configuration.php 12474 2008-10-31 10:41:27Z fabien $
  */
-abstract class BaseAdministrarEquiposGeneratorConfiguration extends sfModelGeneratorConfiguration
+class BaseAdministrarEquiposGeneratorConfiguration extends sfModelGeneratorConfiguration
 {
+  public function getCredentials($action)
+  {
+    if (0 === strpos($action, '_'))
+    {
+      $action = substr($action, 1);
+    }
+
+    return isset($this->configuration['credentials'][$action]) ? $this->configuration['credentials'][$action] : array();
+  }
+
   public function getActionsDefault()
   {
     return array();
@@ -27,11 +37,17 @@ abstract class BaseAdministrarEquiposGeneratorConfiguration extends sfModelGener
 
   public function getEditActions()
   {
+		//  added show view
+	  // return array(  '_delete' => NULL,  '_list' => NULL,  '_show' => NULL,  '_save' => NULL,  '_save_and_add' => NULL,);
+  
     return array();
   }
 
   public function getListObjectActions()
   {
+		// =============== Added show view
+	  return array(  '_show' => NULL,  '_edit' => NULL,  '_delete' => NULL,);
+  
     return array(  '_edit' => NULL,  '_delete' => NULL,);
   }
 
@@ -175,6 +191,22 @@ abstract class BaseAdministrarEquiposGeneratorConfiguration extends sfModelGener
     );
   }
 
+  public function getFieldsShow()
+  {
+    return array(
+      'id' => array(),
+      'origen' => array(),
+      'marca' => array(),
+      'peso' => array(),
+      'estado' => array(),
+      'detalle' => array(),
+      'usuario_id' => array(),
+      'categoria_id' => array(),
+      'empleado_id' => array(),
+      'venta_equipo_id' => array(),
+    );
+  }
+
   public function getFieldsNew()
   {
     return array(
@@ -202,6 +234,11 @@ abstract class BaseAdministrarEquiposGeneratorConfiguration extends sfModelGener
     return 'equipoForm';
   }
 
+  public function getFormOptions()
+  {
+    return array();
+  }
+
   public function hasFilterForm()
   {
     return true;
@@ -215,6 +252,77 @@ abstract class BaseAdministrarEquiposGeneratorConfiguration extends sfModelGener
   public function getFilterFormClass()
   {
     return 'equipoFormFilter';
+  }
+
+	  protected function getConfig()
+  {
+    $configuration = parent::getConfig();
+    $configuration['show'] = $this->getFieldsShow();
+    return $configuration;
+  }
+
+  protected function compile()
+  {
+    parent::compile();
+    
+    $config = $this->getConfig();
+    
+    // add configuration for the show view 
+    $this->configuration['show'] = array( 'fields'         => array(),
+                                          'title'          => $this->getShowTitle(),
+                                          'actions'        => $this->getShowActions(),
+                                          'display'        => $this->getShowDisplay(),
+                                        ) ;
+
+    foreach (array('show') as $context)
+    {
+      foreach ($this->configuration[$context]['actions'] as $action => $parameters)
+      {
+        $this->configuration[$context]['actions'][$action] = $this->fixActionParameters($action, $parameters);
+      }
+    }
+
+
+  }
+
+  public function getShowActions()
+  {
+    return array(  '_list' => NULL,  '_edit' => NULL, '_delete' => NULL);
+  }
+
+  
+  public function getShowTitle()
+  {
+    return 'View AdministrarEquipos';
+  }
+
+  public function getShowDisplay()
+  {
+      return array(  0 => 'id',  1 => 'origen',  2 => 'marca',  3 => 'peso',  4 => 'estado',  5 => 'detalle',  6 => 'usuario_id',  7 => 'categoria_id',  8 => 'empleado_id',  9 => 'venta_equipo_id',);
+  }
+
+  public function getFilterForm($filters)
+  {
+    $class = $this->getFilterFormClass();
+
+    return new $class($filters, $this->getFilterFormOptions());
+  }
+
+  public function getFilterFormOptions()
+  {
+    return array();
+  }
+
+  public function getFilterDefaults()
+  {
+    return array();
+  }
+
+  public function getPager($model)
+  {
+    $class = $this->getPagerClass();
+
+    return new $class($model, $this->getPagerMaxPerPage());
   }
 
   public function getPagerClass()
@@ -240,5 +348,10 @@ abstract class BaseAdministrarEquiposGeneratorConfiguration extends sfModelGener
   public function getTableCountMethod()
   {
     return '';
+  }
+
+  public function getConnection()
+  {
+    return null;
   }
 }

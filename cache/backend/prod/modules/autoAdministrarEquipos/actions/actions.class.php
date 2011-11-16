@@ -4,18 +4,18 @@ require_once(dirname(__FILE__).'/../lib/BaseAdministrarEquiposGeneratorConfigura
 require_once(dirname(__FILE__).'/../lib/BaseAdministrarEquiposGeneratorHelper.class.php');
 
 /**
- * administrarEquipos actions.
+ * AdministrarEquipos actions.
  *
  * @package    ##PROJECT_NAME##
- * @subpackage administrarEquipos
+ * @subpackage AdministrarEquipos
  * @author     ##AUTHOR_NAME##
- * @version    SVN: $Id: actions.class.php 31002 2010-09-27 12:04:07Z Kris.Wallsmith $
+ * @version    SVN: $Id: actions.class.php 12493 2008-10-31 14:43:26Z fabien $
  */
-abstract class autoAdministrarEquiposActions extends sfActions
+class autoAdministrarEquiposActions extends sfActions
 {
   public function preExecute()
   {
-    $this->configuration = new administrarEquiposGeneratorConfiguration();
+    $this->configuration = new AdministrarEquiposGeneratorConfiguration();
 
     if (!$this->getUser()->hasCredential($this->configuration->getCredentials($this->getActionName())))
     {
@@ -24,15 +24,13 @@ abstract class autoAdministrarEquiposActions extends sfActions
 
     $this->dispatcher->notify(new sfEvent($this, 'admin.pre_execute', array('configuration' => $this->configuration)));
 
-    $this->helper = new administrarEquiposGeneratorHelper();
-
-    parent::preExecute();
+    $this->helper = new AdministrarEquiposGeneratorHelper();
   }
 
   public function executeIndex(sfWebRequest $request)
   {
     // sorting
-    if ($request->getParameter('sort') && $this->isValidSortColumn($request->getParameter('sort')))
+    if ($request->getParameter('sort'))
     {
       $this->setSort(array($request->getParameter('sort'), $request->getParameter('sort_type')));
     }
@@ -45,6 +43,9 @@ abstract class autoAdministrarEquiposActions extends sfActions
 
     $this->pager = $this->getPager();
     $this->sort = $this->getSort();
+
+    // has filters? (usefull for activate reset button)
+    $this->hasFilters = $this->getUser()->getAttribute('AdministrarEquipos.filters', $this->configuration->getFilterDefaults(), 'admin_module');
   }
 
   public function executeFilter(sfWebRequest $request)
@@ -112,10 +113,9 @@ abstract class autoAdministrarEquiposActions extends sfActions
 
     $this->dispatcher->notify(new sfEvent($this, 'admin.delete_object', array('object' => $this->getRoute()->getObject())));
 
-    if ($this->getRoute()->getObject()->delete())
-    {
-      $this->getUser()->setFlash('notice', 'The item was deleted successfully.');
-    }
+    $this->getRoute()->getObject()->delete();
+
+    $this->getUser()->setFlash('notice', 'The item was deleted successfully.');
 
     $this->redirect('@equipo');
   }
@@ -148,7 +148,7 @@ abstract class autoAdministrarEquiposActions extends sfActions
       $this->forward(sfConfig::get('sf_secure_module'), sfConfig::get('sf_secure_action'));
     }
 
-    $validator = new sfValidatorDoctrineChoice(array('multiple' => true, 'model' => 'equipo'));
+    $validator = new sfValidatorDoctrineChoice(array('model' => 'equipo'));
     try
     {
       // validate ids
@@ -169,19 +169,21 @@ abstract class autoAdministrarEquiposActions extends sfActions
   {
     $ids = $request->getParameter('ids');
 
-    $records = Doctrine_Query::create()
+    $count = Doctrine_Query::create()
+      ->delete()
       ->from('equipo')
       ->whereIn('id', $ids)
       ->execute();
 
-    foreach ($records as $record)
+    if ($count >= count($ids))
     {
-      $this->dispatcher->notify(new sfEvent($this, 'admin.delete_object', array('object' => $record)));
-
-      $record->delete();
+      $this->getUser()->setFlash('notice', 'The selected items have been deleted successfully.');
+    }
+    else
+    {
+      $this->getUser()->setFlash('error', 'A problem occurs when deleting the selected items.');
     }
 
-    $this->getUser()->setFlash('notice', 'The selected items have been deleted successfully.');
     $this->redirect('@equipo');
   }
 
@@ -192,21 +194,7 @@ abstract class autoAdministrarEquiposActions extends sfActions
     {
       $notice = $form->getObject()->isNew() ? 'The item was created successfully.' : 'The item was updated successfully.';
 
-      try {
-        $equipo = $form->save();
-      } catch (Doctrine_Validator_Exception $e) {
-
-        $errorStack = $form->getObject()->getErrorStack();
-
-        $message = get_class($form->getObject()) . ' has ' . count($errorStack) . " field" . (count($errorStack) > 1 ?  's' : null) . " with validation errors: ";
-        foreach ($errorStack as $field => $errors) {
-            $message .= "$field (" . implode(", ", $errors) . "), ";
-        }
-        $message = trim($message, ', ');
-
-        $this->getUser()->setFlash('error', $message);
-        return sfView::SUCCESS;
-      }
+      $equipo = $form->save();
 
       $this->dispatcher->notify(new sfEvent($this, 'admin.save_object', array('object' => $equipo)));
 
@@ -231,12 +219,12 @@ abstract class autoAdministrarEquiposActions extends sfActions
 
   protected function getFilters()
   {
-    return $this->getUser()->getAttribute('administrarEquipos.filters', $this->configuration->getFilterDefaults(), 'admin_module');
+    return $this->getUser()->getAttribute('AdministrarEquipos.filters', $this->configuration->getFilterDefaults(), 'admin_module');
   }
 
   protected function setFilters(array $filters)
   {
-    return $this->getUser()->setAttribute('administrarEquipos.filters', $filters, 'admin_module');
+    return $this->getUser()->setAttribute('AdministrarEquipos.filters', $filters, 'admin_module');
   }
 
   protected function getPager()
@@ -251,18 +239,18 @@ abstract class autoAdministrarEquiposActions extends sfActions
 
   protected function setPage($page)
   {
-    $this->getUser()->setAttribute('administrarEquipos.page', $page, 'admin_module');
+    $this->getUser()->setAttribute('AdministrarEquipos.page', $page, 'admin_module');
   }
 
   protected function getPage()
   {
-    return $this->getUser()->getAttribute('administrarEquipos.page', 1, 'admin_module');
+    return $this->getUser()->getAttribute('AdministrarEquipos.page', 1, 'admin_module');
   }
 
   protected function buildQuery()
   {
     $tableMethod = $this->configuration->getTableMethod();
-    if (null === $this->filters)
+    if (is_null($this->filters))
     {
       $this->filters = $this->configuration->getFilterForm($this->getFilters());
     }
@@ -286,38 +274,37 @@ abstract class autoAdministrarEquiposActions extends sfActions
       return;
     }
 
-    if (!in_array(strtolower($sort[1]), array('asc', 'desc')))
-    {
-      $sort[1] = 'asc';
-    }
-
     $query->addOrderBy($sort[0] . ' ' . $sort[1]);
   }
 
   protected function getSort()
   {
-    if (null !== $sort = $this->getUser()->getAttribute('administrarEquipos.sort', null, 'admin_module'))
+    if (!is_null($sort = $this->getUser()->getAttribute('AdministrarEquipos.sort', null, 'admin_module')))
     {
       return $sort;
     }
 
     $this->setSort($this->configuration->getDefaultSort());
 
-    return $this->getUser()->getAttribute('administrarEquipos.sort', null, 'admin_module');
+    return $this->getUser()->getAttribute('AdministrarEquipos.sort', null, 'admin_module');
   }
 
   protected function setSort(array $sort)
   {
-    if (null !== $sort[0] && null === $sort[1])
+    if (!is_null($sort[0]) && is_null($sort[1]))
     {
       $sort[1] = 'asc';
     }
 
-    $this->getUser()->setAttribute('administrarEquipos.sort', $sort, 'admin_module');
+    $this->getUser()->setAttribute('AdministrarEquipos.sort', $sort, 'admin_module');
   }
 
-  protected function isValidSortColumn($column)
-  {
-    return Doctrine_Core::getTable('equipo')->hasColumn($column);
-  }
+	public function executeShow(sfWebRequest $request)
+	{
+	  $this->equipo = Doctrine::getTable('equipo')->find($request->getParameter('id'));
+	  $this->forward404Unless($this->equipo);
+	  $this->form = $this->configuration->getForm($this->equipo);
+	}
+
+
 }

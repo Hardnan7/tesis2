@@ -1,1 +1,1 @@
-<?php include_partial('administrarEquipos/list_th_tabular', array('sort' => $sort)) ?>
+<?php include_partial('AdministrarEquipos/list_th_tabular', array('sort' => $sort)) ?>

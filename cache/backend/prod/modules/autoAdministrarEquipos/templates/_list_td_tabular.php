@@ -11,7 +11,7 @@
   <?php echo $equipo->getPeso() ?>
 </td>
 <td class="sf_admin_boolean sf_admin_list_td_estado">
-  <?php echo get_partial('administrarEquipos/list_field_boolean', array('value' => $equipo->getEstado())) ?>
+  <?php echo get_partial('AdministrarEquipos/list_field_boolean', array('value' => $equipo->getEstado())) ?>
 </td>
 <td class="sf_admin_text sf_admin_list_td_detalle">
   <?php echo $equipo->getDetalle() ?>
